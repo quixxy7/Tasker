@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fs;
 
 #[derive(Serialize, Deserialize)]
 pub enum TaskStatus {
@@ -21,5 +22,25 @@ impl Task {
             name,
             status: TaskStatus::Todo,
         }
+    }
+}
+
+const TASKS_FILE: &str = ".tsk/tasks.json";
+
+#[derive(Serialize, Deserialize)]
+pub struct TaskStorage {
+    tasks: Vec<Task>,
+    next_id: u32,
+}
+impl TaskStorage {
+    pub fn load() -> TaskStorage {
+        let content = fs::read_to_string(TASKS_FILE).unwrap();
+        let storage: TaskStorage = serde_json::from_str(&content).unwrap();
+        storage
+    }
+
+    pub fn save(&self) {
+        let content = serde_json::to_string(self).unwrap();
+        fs::write(TASKS_FILE, content).unwrap();
     }
 }
