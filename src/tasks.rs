@@ -1,9 +1,13 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
 pub enum TaskStatus {
     Todo,
     InProgress,
     Done,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Task {
     pub id: u32,
     pub name: String,
