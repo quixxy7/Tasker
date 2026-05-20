@@ -29,8 +29,8 @@ const TASKS_FILE: &str = ".tsk/tasks.json";
 
 #[derive(Serialize, Deserialize)]
 pub struct TaskStorage {
-    tasks: Vec<Task>,
-    next_id: u32,
+    pub tasks: Vec<Task>,
+    pub next_id: u32,
 }
 impl TaskStorage {
     pub fn load() -> TaskStorage {
