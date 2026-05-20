@@ -4,7 +4,7 @@ use clap::Parser;
 use cli::{Cli, Commands};
 use std::env;
 use std::fs;
-use tasks::{Task, TaskStorage};
+use tasks::{Task, TaskStatus, TaskStorage};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
@@ -35,9 +35,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             for i in 0..storage.tasks.len() {
                 if storage.tasks[i].id == id {
                     storage.tasks.remove(i);
+                    break;
                 }
             }
             storage.save()?;
+        }
+        Commands::Start { id } => {
+            let mut storage = TaskStorage::load()?;
+            for task in storage.tasks.iter_mut() {
+                if task.id == id {
+                    task.status = TaskStatus::InProgress;
+                    break;
+                }
+            }
+            storage.save()?
+        }
+        Commands::Done { id } => {
+            let mut storage = TaskStorage::load()?;
+            for task in storage.tasks.iter_mut() {
+                if task.id == id {
+                    task.status = TaskStatus::Done;
+                    break;
+                }
+            }
+            storage.save()?
         }
     }
     Ok(())

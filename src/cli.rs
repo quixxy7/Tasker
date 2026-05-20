@@ -12,4 +12,6 @@ pub enum Commands {
     Add { name: String },
     List,
     Remove { id: u32 },
+    Start { id: u32 },
+    Done { id: u32 },
 }
