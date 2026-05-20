@@ -1,11 +1,21 @@
 use serde::{Deserialize, Serialize};
-use std::fs;
+use std::{fmt, fs};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum TaskStatus {
     Todo,
     InProgress,
     Done,
+}
+
+impl fmt::Display for TaskStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TaskStatus::Todo => write!(f, "todo"),
+            TaskStatus::InProgress => write!(f, "in progress"),
+            TaskStatus::Done => write!(f, "done"),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -22,6 +32,15 @@ impl Task {
             name,
             status: TaskStatus::Todo,
         }
+    }
+}
+impl fmt::Display for Task {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "id: {} | name: {} | status: {}",
+            self.id, self.name, self.status
+        )
     }
 }
 

@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::List => {
             let storage = TaskStorage::load()?;
             for task in storage.tasks.iter() {
-                println!("{:?}", task);
+                println!("{}", task);
             }
         }
         Commands::Remove { id } => {
