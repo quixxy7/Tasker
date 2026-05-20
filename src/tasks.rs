@@ -36,11 +36,7 @@ impl Task {
 }
 impl fmt::Display for Task {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "id: {} | name: {} | status: {}",
-            self.id, self.name, self.status
-        )
+        write!(f, "{:<3} | {:<20} | {}", self.id, self.name, self.status)
     }
 }
 
