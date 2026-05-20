@@ -33,14 +33,15 @@ pub struct TaskStorage {
     pub next_id: u32,
 }
 impl TaskStorage {
-    pub fn load() -> TaskStorage {
-        let content = fs::read_to_string(TASKS_FILE).unwrap();
-        let storage: TaskStorage = serde_json::from_str(&content).unwrap();
-        storage
+    pub fn load() -> Result<TaskStorage, Box<dyn std::error::Error>> {
+        let content = fs::read_to_string(TASKS_FILE)?;
+        let storage: TaskStorage = serde_json::from_str(&content)?;
+        Ok(storage)
     }
 
-    pub fn save(&self) {
-        let content = serde_json::to_string(self).unwrap();
-        fs::write(TASKS_FILE, content).unwrap();
+    pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+        let content = serde_json::to_string(self)?;
+        fs::write(TASKS_FILE, content)?;
+        Ok(())
     }
 }
