@@ -12,10 +12,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Init => {
             let mut path = env::current_dir()?;
             path.push(".tsk");
-            fs::create_dir(&path)?;
+            if !path.exists() {
+                fs::create_dir(&path)?;
+            } else {
+                println!("Already initialized");
+                return Ok(());
+            }
 
             path.push("tasks.json");
-            fs::write(path, "{\"next_id\": 1, \"tasks\": []}")?;
+            if !path.is_file() {
+                fs::write(path, "{\"next_id\": 1, \"tasks\": []}")?;
+            }
         }
         Commands::Add { name } => {
             let mut storage = TaskStorage::load()?;
