@@ -1,6 +1,9 @@
+use chrono;
+use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::{fmt, fs};
 
+// TaskStatus
 #[derive(Debug, Serialize, Deserialize)]
 pub enum TaskStatus {
     Todo,
@@ -11,9 +14,9 @@ pub enum TaskStatus {
 impl fmt::Display for TaskStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TaskStatus::Todo => write!(f, "todo"),
-            TaskStatus::InProgress => write!(f, "in progress"),
-            TaskStatus::Done => write!(f, "done"),
+            TaskStatus::Todo => write!(f, "{}", "todo".red()),
+            TaskStatus::InProgress => write!(f, "{}", "in progress".yellow()),
+            TaskStatus::Done => write!(f, "{}", "done".green()),
         }
     }
 }
@@ -23,23 +26,48 @@ pub struct Task {
     pub id: u32,
     pub name: String,
     pub status: TaskStatus,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
+// Task
 impl Task {
     pub fn new(id: u32, name: String) -> Self {
         Task {
             id,
             name,
             status: TaskStatus::Todo,
+            created_at: chrono::Utc::now(),
+            updated_at: chrono::Utc::now(),
         }
     }
 }
 impl fmt::Display for Task {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:<3} | {:<20} | {}", self.id, self.name, self.status)
+        let task_info = format!(
+            "{:<3} | {:<20} | {:<15}",
+            self.id.to_string().red().bold(),
+            self.name,
+            self.status
+        );
+        let created = self.created_at.format("%Y-%m-%d %H:%M").to_string();
+        let updated = self.updated_at.format("%Y-%m-%d %H:%M").to_string();
+        let time_info = if created == updated {
+            format!("{}: {}", "updated".dimmed(), updated)
+        } else {
+            format!(
+                "{}: {} | {}: {}",
+                "created_at".dimmed(),
+                created,
+                "updated".dimmed(),
+                updated
+            )
+        };
+        write!(f, "{} -- {}", task_info, time_info)
     }
 }
 
+// Task Storage
 const TASKS_FILE: &str = ".tsk/tasks.json";
 
 #[derive(Serialize, Deserialize)]
