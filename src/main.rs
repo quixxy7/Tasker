@@ -2,6 +2,7 @@ mod cli;
 mod tasks;
 use clap::Parser;
 use cli::{Cli, Commands};
+use colored::Colorize;
 use std::env;
 use std::fs;
 use tasks::{Task, TaskStatus, TaskStorage};
@@ -46,6 +47,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     println!("{}", task);
                 }
             }
+        }
+        Commands::Status => {
+            let mut todo_count: u32 = 0;
+            let mut in_progress_count: u32 = 0;
+            let mut done_count: u32 = 0;
+
+            let storage = TaskStorage::load()?;
+
+            for task in storage.tasks.iter() {
+                match task.status {
+                    TaskStatus::Todo => todo_count += 1,
+                    TaskStatus::InProgress => in_progress_count += 1,
+                    TaskStatus::Done => done_count += 1,
+                }
+            }
+            println!(
+                "todo: {}\nin progress: {}\ndone: {}",
+                todo_count.to_string().red(),
+                in_progress_count.to_string().yellow(),
+                done_count.to_string().green()
+            )
         }
         Commands::Remove { id } => {
             let mut storage = TaskStorage::load()?;

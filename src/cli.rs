@@ -11,6 +11,7 @@ pub enum Commands {
     Init,
     Add { name: String },
     List { status: Option<String> },
+    Status,
     Remove { id: u32 },
     Start { id: u32 },
     Done { id: u32 },
