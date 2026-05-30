@@ -1,9 +1,10 @@
-use chrono;
+//! Structures and methods for task management
+
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::{fmt, fs};
 
-// TaskStatus
+/// Represents the current status of a task
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum TaskStatus {
     Todo,
@@ -14,6 +15,7 @@ pub enum TaskStatus {
 impl std::str::FromStr for TaskStatus {
     type Err = String;
 
+    /// Parses a string into a TaskStatus. Returns an error if the string is unknown.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "todo" => Ok(TaskStatus::Todo),
@@ -24,6 +26,7 @@ impl std::str::FromStr for TaskStatus {
     }
 }
 
+/// Formats a status for display in the terminal
 impl fmt::Display for TaskStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -34,6 +37,7 @@ impl fmt::Display for TaskStatus {
     }
 }
 
+/// A task with an id, name, status and timestamps
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Task {
     pub id: u32,
@@ -43,8 +47,8 @@ pub struct Task {
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
-// Task
 impl Task {
+    /// Creates a new task with the given id and name, status defaults to Todo
     pub fn new(id: u32, name: String) -> Self {
         Task {
             id,
@@ -55,6 +59,7 @@ impl Task {
         }
     }
 }
+/// Fromat a task to display in the terminal
 impl fmt::Display for Task {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let task_info = format!(
@@ -80,21 +85,24 @@ impl fmt::Display for Task {
     }
 }
 
-// Task Storage
+/// Name of the directory and file that keep tasks
 const TASKS_FILE: &str = ".tsk/tasks.json";
 
+/// Structure to keep tasks while methods and next_id of new task
 #[derive(Serialize, Deserialize)]
 pub struct TaskStorage {
     pub tasks: Vec<Task>,
     pub next_id: u32,
 }
 impl TaskStorage {
+    /// Loads tasks and next_id from TASKS_FILE to storage
     pub fn load() -> Result<TaskStorage, Box<dyn std::error::Error>> {
         let content = fs::read_to_string(TASKS_FILE)?;
         let storage: TaskStorage = serde_json::from_str(&content)?;
         Ok(storage)
     }
 
+    /// Save tasks and next_id after commands to TASKS_FILE
     pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
         let content = serde_json::to_string(self)?;
         fs::write(TASKS_FILE, content)?;

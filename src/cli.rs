@@ -1,3 +1,5 @@
+//! Structures to parse commands from terminal
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]

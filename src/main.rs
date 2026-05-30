@@ -1,3 +1,5 @@
+//! CLI task manager entry point
+
 mod cli;
 mod tasks;
 use clap::Parser;
