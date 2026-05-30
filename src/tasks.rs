@@ -1,5 +1,6 @@
 //! Structures and methods for task management
 
+use crate::errors::TskError;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 use std::{fmt, fs};
@@ -13,7 +14,7 @@ pub enum TaskStatus {
 }
 
 impl std::str::FromStr for TaskStatus {
-    type Err = String;
+    type Err = TskError;
 
     /// Parses a string into a TaskStatus. Returns an error if the string is unknown.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -21,7 +22,7 @@ impl std::str::FromStr for TaskStatus {
             "todo" => Ok(TaskStatus::Todo),
             "in-progress" => Ok(TaskStatus::InProgress),
             "done" => Ok(TaskStatus::Done),
-            other => Err(format!("Unknown status {}", other)),
+            other => Err(TskError::ParseError(format!("Unknown status {}", other))),
         }
     }
 }
@@ -96,14 +97,20 @@ pub struct TaskStorage {
 }
 impl TaskStorage {
     /// Loads tasks and next_id from TASKS_FILE to storage
-    pub fn load() -> Result<TaskStorage, Box<dyn std::error::Error>> {
+    pub fn load() -> Result<TaskStorage, TskError> {
+        if !std::path::Path::new(TASKS_FILE).exists() {
+            return Err(TskError::NotInitialized);
+        }
         let content = fs::read_to_string(TASKS_FILE)?;
         let storage: TaskStorage = serde_json::from_str(&content)?;
         Ok(storage)
     }
 
     /// Save tasks and next_id after commands to TASKS_FILE
-    pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn save(&self) -> Result<(), TskError> {
+        if !std::path::Path::new(TASKS_FILE).exists() {
+            return Err(TskError::NotInitialized);
+        }
         let content = serde_json::to_string(self)?;
         fs::write(TASKS_FILE, content)?;
         Ok(())

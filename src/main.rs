@@ -8,8 +8,10 @@ use colored::Colorize;
 use std::env;
 use std::fs;
 use tasks::{Task, TaskStatus, TaskStorage};
+mod errors;
+use crate::errors::TskError;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), TskError> {
     let cli = Cli::parse();
     match cli.command {
         Commands::Init => {
@@ -18,8 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if !path.exists() {
                 fs::create_dir(&path)?;
             } else {
-                println!("Already initialized");
-                return Ok(());
+                return Err(TskError::AlreadyInitialized);
             }
 
             path.push("tasks.json");
@@ -31,8 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut path = env::current_dir()?;
             path.push(".tsk/tasks.json");
             if !path.exists() {
-                println!("Not found Tasker file");
-                return Ok(());
+                return Err(TskError::TaskNotFound);
             }
             fs::write(path, "{\"next_id\": 1, \"tasks\": []}")?;
         }
@@ -91,7 +91,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             if !found {
-                println!("Id has been not found. Task was not removed");
+                return Err(TskError::TaskNotFound);
             }
             storage.save()?;
         }
@@ -106,7 +106,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             if !found {
-                println!("Id has been not found. Task was not changed");
+                return Err(TskError::TaskNotFound);
             }
             storage.save()?
         }
@@ -121,7 +121,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
             if !found {
-                println!("Id has been not found. Task was not changed");
+                return Err(TskError::TaskNotFound);
             }
             storage.save()?
         }
