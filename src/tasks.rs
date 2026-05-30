@@ -4,11 +4,24 @@ use serde::{Deserialize, Serialize};
 use std::{fmt, fs};
 
 // TaskStatus
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub enum TaskStatus {
     Todo,
     InProgress,
     Done,
+}
+
+impl std::str::FromStr for TaskStatus {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "todo" => Ok(TaskStatus::Todo),
+            "in-progress" => Ok(TaskStatus::InProgress),
+            "done" => Ok(TaskStatus::Done),
+            other => Err(format!("Unknown status {}", other)),
+        }
+    }
 }
 
 impl fmt::Display for TaskStatus {

@@ -31,10 +31,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             storage.next_id += 1;
             storage.save()?;
         }
-        Commands::List => {
+        Commands::List { status } => {
             let storage = TaskStorage::load()?;
-            for task in storage.tasks.iter() {
-                println!("{}", task);
+
+            if let Some(status) = status {
+                let filter = status.parse::<TaskStatus>()?;
+                for task in storage.tasks.iter() {
+                    if task.status == filter {
+                        println!("{}", task)
+                    }
+                }
+            } else {
+                for task in storage.tasks.iter() {
+                    println!("{}", task);
+                }
             }
         }
         Commands::Remove { id } => {

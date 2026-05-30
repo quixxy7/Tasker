@@ -10,7 +10,7 @@ pub struct Cli {
 pub enum Commands {
     Init,
     Add { name: String },
-    List,
+    List { status: Option<String> },
     Remove { id: u32 },
     Start { id: u32 },
     Done { id: u32 },
