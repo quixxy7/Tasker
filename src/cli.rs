@@ -9,6 +9,7 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Commands {
     Init,
+    Reset,
     Add { name: String },
     List { status: Option<String> },
     Status,

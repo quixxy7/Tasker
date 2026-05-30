@@ -25,6 +25,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 fs::write(path, "{\"next_id\": 1, \"tasks\": []}")?;
             }
         }
+        Commands::Reset => {
+            let mut path = env::current_dir()?;
+            path.push(".tsk/tasks.json");
+            if !path.exists() {
+                println!("Not found Tasker file");
+                return Ok(());
+            }
+            fs::write(path, "{\"next_id\": 1, \"tasks\": []}")?;
+        }
         Commands::Add { name } => {
             let mut storage = TaskStorage::load()?;
             let task = Task::new(storage.next_id, name);
